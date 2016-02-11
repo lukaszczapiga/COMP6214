@@ -1,10 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <base href="/">
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Open Data Visualisation</title>
+
+    <link rel="stylesheet" href="js/libs/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/main.css"> <!-- custom styles -->
+    <link rel="stylesheet" href="js/libs/font-awesome/css/font-awesome.min.css">
+
 </head>
-<body>
-Body kurwa
+<body ng-controller="indexCtrl">
+{{welcomeMessage}}
+<div class="container">
+    <ui-view></ui-view>
+</div>
+<script src="js/libs/angular/angular.min.js"></script>
+<script src="js/libs/angular-ui-router/release/angular-ui-router.min.js"></script>
+<script src="js/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="app.js"></script>
+<script src="js/controllers/indexController.js"></script>
+<script src="js/controllers/visualisationsController.js"></script>
 </body>
 </html>
