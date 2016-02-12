@@ -1,10 +1,10 @@
 'use strict';
 
-angular.module('openDataApp', ['angular',
-    'angular-ui-route',
-    'angular-bootstrap',
+angular.module('openDataApp', [
+    'ui.router',
     'indexController',
-    'visualisationsController'
+    'visualisationsController',
+    'dataService'
 ]).config(function ($stateProvider, $urlRouterProvider, $locationProvider){
     // For any unmatched url, redirect to /state1
     $urlRouterProvider.otherwise('/home');
@@ -15,6 +15,10 @@ angular.module('openDataApp', ['angular',
             url: '/home',
             templateUrl: 'views/visualisations.html',
             controller: 'visualisationsCtrl'
+        })
+        .state('about',{
+            url: '/about',
+            templateUrl: 'views/about.html'
         });
 
     $locationProvider.html5Mode(true);

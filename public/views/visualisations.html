@@ -1,5 +1,15 @@
 <div class="row">
     <div class="col-sm-12">
-        {{welcomeMessage}}
+        <h1 class="text-center">Visualisations</h1>
+        There are {{agencyData.length}} US Agencies. They are:
+        <input type="search" ng-model="q" placeholder="filter agencies..." aria-label="filter agencies" />
+        <ul class="example-animate-container">
+            <li class="animate-repeat" ng-repeat="agency in agencyData | filter:q as results">
+                [{{$index + 1}}] {{agency.name}}. Total costs: {{agency.totalCosts}} ($ M). Number of projects: {{agency.projectCount}}
+            </li>
+            <li class="animate-repeat" ng-if="results.length == 0">
+                <strong>No results found...</strong>
+            </li>
+        </ul>
     </div>
 </div>

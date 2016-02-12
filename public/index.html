@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html ng-app="openDataApp" lang="en">
 <head>
     <base href="/">
     <meta charset="UTF-8">
@@ -11,15 +11,34 @@
 
 </head>
 <body ng-controller="indexCtrl">
-{{welcomeMessage}}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/home">Open Data Visualisation</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li ng-class="{ active: isActive('/about')}"><a href="/about">About</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
 <div class="container">
     <ui-view></ui-view>
 </div>
-<script src="js/libs/angular/angular.min.js"></script>
+<script src="js/libs/angular/angular.js"></script>
+<script src="js/libs/jquery/dist/jquery.min.js"></script>
 <script src="js/libs/angular-ui-router/release/angular-ui-router.min.js"></script>
 <script src="js/libs/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="app.js"></script>
 <script src="js/controllers/indexController.js"></script>
 <script src="js/controllers/visualisationsController.js"></script>
+<script src="js/services/openDataService.js"></script>
 </body>
 </html>
