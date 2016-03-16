@@ -1,6 +1,6 @@
 {
   "name": "open-data-visualisation-cw",
-  "version": "0.1.5",
+
   "description": "Open Data Visualisation CW",
   "main": "index.js",
   "scripts": {

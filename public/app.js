@@ -4,7 +4,9 @@ angular.module('openDataApp', [
     'ui.router',
     'indexController',
     'visualisationsController',
-    'dataService'
+    'dataService',
+    'highcharts-ng',
+    'smart-table'
 ]).config(function ($stateProvider, $urlRouterProvider, $locationProvider){
     // For any unmatched url, redirect to /state1
     $urlRouterProvider.otherwise('/home');

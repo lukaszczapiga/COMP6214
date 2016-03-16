@@ -6,7 +6,10 @@
     "bootstrap": "latest",
     "angular-bootstrap": "latest",
     "font-awesome": "latest",
-    "angular-ui-router": "latest"
+    "angular-ui-router": "latest",
+    "highcharts": "latest",
+    "highcharts-ng": "latest",
+    "angular-smart-table": "latest"
   },
   "resolutions": {
     "angular": "1.4.8"

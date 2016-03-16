@@ -1,15 +1,162 @@
 <div class="row">
     <div class="col-sm-12">
         <h1 class="text-center">Visualisations</h1>
-        There are {{agencyData.length}} US Agencies. They are:
-        <input type="search" ng-model="q" placeholder="filter agencies..." aria-label="filter agencies" />
-        <ul class="example-animate-container">
-            <li class="animate-repeat" ng-repeat="agency in agencyData | filter:q as results">
-                [{{$index + 1}}] {{agency.name}}. Total costs: {{agency.totalCosts}} ($ M). Number of projects: {{agency.projectCount}}
-            </li>
-            <li class="animate-repeat" ng-if="results.length == 0">
-                <strong>No results found...</strong>
-            </li>
-        </ul>
+        <div class="row">
+            <div class="col-sm-12">
+                <highchart id="chart1" config="chartConfig"></highchart>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12" ng-if="!showDetails">
+                There are {{agencyData.length}} US Agencies. They are:
+                <table st-table="displayedCollectionAgency" st-safe-src="rowCollectionAgency" class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>
+                            <form>
+                                <label for="predicateAgency">Search for:</label>
+                                <select class="form-control" id="predicateAgency" ng-model="selectedPredicateAgency" ng-options="predicate for predicate in predicatesAgency"></select>
+                            </form>
+                        </th>
+                        <th>
+                            <input st-search="{{wordsToCamelCase(selectedPredicateAgency)}}" placeholder="Search field" class="input-sm form-control" type="search"/>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th st-sort="name">Name</th>
+                        <th st-sort="projectCount">Project Count</th>
+                        <th st-sort="totalCosts">Total Costs</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="row in displayedCollectionAgency">
+                        <td>{{row.name}}</td>
+                        <td>{{row.projectCount}}</td>
+                        <td>{{row.totalCosts | currency}}</td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="2" class="text-center">
+                            <div st-pagination="" st-items-by-page="itemsByPageAgency" st-displayed-pages="5"></div>
+                        </td>
+                        <td class="text-center">
+                            <div class="row">
+                                <div class="col-xs-4 col-xs-offset-4">
+                                    <input type="number" class="input-sm form-control itemsByPage" id="itemsByPageAgency" ng-model="itemsByPageAgency">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="col-sm-12" ng-if="showDetails">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <highchart id="chart2" config="scatterChartConfig"></highchart>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        Compare:
+                    </div>
+                    <div class="col-sm-11">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <select name="agencySelect1" id="agencySelect1" ng-model="scatterCompareSelect.selectOne" ng-change="onChange(scatterCompareSelect.selectOne, 1)">
+                                    <option ng-repeat="option in agencyData" value="{{option.id}}">{{option.name}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select name="agencySelect2" id="agencySelect2" ng-model="scatterCompareSelect.selectTwo" ng-change="onChange(scatterCompareSelect.selectTwo, 2)">
+                                    <option ng-repeat="option in agencyData" value="{{option.id}}">{{option.name}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select name="agencySelect3" id="agencySelect3" ng-model="scatterCompareSelect.selectThree" ng-change="onChange(scatterCompareSelect.selectThree, 3)">
+                                    <option ng-repeat="option in agencyData" value="{{option.id}}">{{option.name}}</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <a class="btn btn-danger" role="button" ng-click="resetSelect()">Reset</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h3 ng-if="!isAllProjects">Top 10 Projects Details</h3>
+                        <h3 ng-if="isAllProjects">All Projects Details</h3>
+                        Total number of projects: {{agencyData[agencyIndex].projects.length}}
+                        <a class="btn btn-default" ng-click="showAllProjects(agencyIndex)" role="button" ng-hide="isAllProjects">Show all</a>
+                        <table st-table="displayedCollectionProjects" st-safe-src="rowCollectionProjects" class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <form>
+                                        <label for="predicateProjects">Search for:</label>
+                                        <select class="form-control" id="predicateProjects" ng-model="selectedPredicateProjects" ng-options="predicate for predicate in predicatesProjects"></select>
+                                    </form>
+                                </th>
+                                <th>
+                                    <input st-search="{{wordsToCamelCase(selectedPredicateProjects)}}" placeholder="Search field" class="input-sm form-control" type="search"/>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th st-sort="name">Name</th>
+                                <th st-sort="totalCosts">Total Costs</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr st-select-row="row" st-select-mode="multiple" ng-repeat="row in displayedCollectionProjects" ng-click="selectRow(row)">
+                                <td>{{row.name}}</td>
+                                <td>{{row.cost | currency}}</td>
+                            </tr>
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <td colspan="1" class="text-center">
+                                    <div st-pagination="" st-items-by-page="itemsByPageProjects" st-displayed-pages="5"></div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="row">
+                                        <div class="col-xs-4">
+                                            <label for="itemsByPageProjects" class="itemsByPage">Projects per page:</label>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <input type="number" class="input-sm form-control itemsByPage" id="itemsByPageProjects" ng-model="itemsByPageProjects">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="showCompare">
+            <div class="col-sm-12">
+                <h3 class="text-center">Compare</h3>
+                <a class="btn btn-danger" role="button" ng-click="resetCompare()">Reset</a>
+                <table st-table="displayedCollectionProjects" st-safe-src="rowCollectionProjects" class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Attribute</th>
+                        <th  ng-repeat="project in compare">{{project.name}}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="row in attributes">
+                        <td>{{row.name}}</td>
+                        <td ng-repeat="value in row.values">{{value | currency}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>

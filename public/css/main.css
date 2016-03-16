@@ -1,3 +1,20 @@
 body {
   padding-top: 50px;
 }
+
+.st-sort-ascent:before {
+  content: '\25B2';
+}
+
+.st-sort-descent:before {
+  content: '\25BC';
+}
+
+.itemsByPage {
+    margin: 20px 0;
+}
+
+.st-selected{
+    background: #216eff !important;
+    color: white !important;
+}
