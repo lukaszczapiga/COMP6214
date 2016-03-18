@@ -190,7 +190,8 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
                             $scope.$apply(function () {
                                 $scope.showDetails = true;
                                 $scope.agencyIndex = e.point.index;
-                                $scope.chartConfig.subtitle.text = e.point.name;
+                                $scope.chartConfig.title.text = e.point.name;
+                                $scope.chartConfig.subtitle.text = 'Top 10 projects';
 
                                 $scope.compareSelects = $scope.agencyData.slice();
                                 $scope.compareSelects.splice($scope.agencyIndex,1);
@@ -202,6 +203,10 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
                                 $scope.scatterChartConfig.series[0].data = $scope.scatters[agencyId].data;
                                 $scope.scatterChartConfig.series[0].name = $scope.scatters[agencyId].name;
                                 $scope.scatterChartConfig.title.text = 'Cost Variance vs Schedule Variance of '+ $scope.scatters[agencyId].data.length +' Projects by Agency';
+
+                                $scope.selectModel1 =  $scope.compareSelects.slice();
+                                $scope.selectModel2 =  $scope.compareSelects.slice();
+                                $scope.selectModel3 =  $scope.compareSelects.slice();
                             });
                         },
                         drillup: function (e) {
@@ -209,6 +214,7 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
                                 $scope.showDetails = false;
                                 $scope.showCompare = false;
                                 $scope.isAllProjects = false;
+                                $scope.chartConfig.title.text = 'US Government Projects\' Total Costs and Projects Count by Agency';
                                 $scope.chartConfig.subtitle.text = 'Click the agency name to view the top 10 projects'
                             });
                         }
@@ -338,7 +344,7 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
                         },
                         tooltip: {
                             headerFormat: '<b>{series.name}</b><br>',
-                            pointFormat: 'Cost variance: {point.x} % <br> Schedule variance: {point.y} % <br> {point.name}'
+                            pointFormat: '{point.name} <br> Cost variance: {point.x} % <br> Schedule variance: {point.y} %'
                         }
                     }
                 },
@@ -391,13 +397,51 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
         $scope.attributes = [];
         $scope.compare.push(row);
         var temp = {};
-        temp['name'] = 'Cost';
+        var temp2 = {};
+        var temp3 = {};
+        var temp4 = {};
+        var temp5 = {};
+        var temp6 = {};
+
+        temp['name'] = 'Total Costs ($ M)';
         temp['values'] = [];
+        temp2['name'] = 'Start Date';
+        temp2['values'] =  [];
+
+        temp3['name'] = 'Lifecycle Costs ($ M)';
+        temp3['values'] = [];
+        temp4['name'] = 'Cost Variance ($ M)';
+        temp4['values'] =  [];
+        temp5['name'] = 'Schedule Variance (days)';
+        temp5['values'] = [];
+        temp6['name'] = 'End Date';
+        temp6['values'] =  [];
+
+
+        temp['filter'] = 'currency';
+        temp2['filter'] = 'date';
+        temp3['filter'] = 'currency';
+        temp4['filter'] = 'currency';
+        temp5['filter'] = 'number';
+
+        temp6['filter'] = 'date';
 
         for(var i=0; i<$scope.compare.length; i++){
             temp['values'].push($scope.compare[i].cost);
+            temp2['values'].push($scope.compare[i].startDate);
+            temp3['values'].push($scope.compare[i].lifecycleCost);
+            temp4['values'].push($scope.compare[i].costVariance);
+            temp5['values'].push($scope.compare[i].scheduleVariance);
+            temp6['values'].push($scope.compare[i].plannedEndDate);
         }
         $scope.attributes.push(temp);
+        $scope.attributes.push(temp3);
+        $scope.attributes.push(temp4);
+        $scope.attributes.push(temp5);
+
+        $scope.attributes.push(temp2);
+        $scope.attributes.push(temp6);
+
     };
 
     $scope.resetCompare = function(){
@@ -428,14 +472,60 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
         selectThree : null
     };
 
+
+    var temp1 = {};
+    var temp2 = {};
+    var temp3 = {};
+    var prevIndex1 = [];
+    var prevIndex2 = [];
+    var prevIndex3 = [];
+
+    $scope.disabled = {
+        two: true,
+        three: true
+    };
+
     $scope.onChange = function(value, select){
         $scope.scatterChartConfig.title.text = 'Cost Variance vs Schedule Variance';
+
         if(select===1){
-            selected[0] = value;
+            $scope.disabled.two = false;
+            selected[0] = value.id;
+            if(prevIndex1.length > 0){
+                $scope.selectModel2.splice(prevIndex1[0],0, temp1);
+                $scope.selectModel3.splice(prevIndex1[1],0, temp1);
+            }
+            var index2 = $scope.selectModel2.indexOf( $scope.scatterCompareSelect.selectOne );
+            var index3 = $scope.selectModel3.indexOf( $scope.scatterCompareSelect.selectOne );
+            $scope.selectModel2.splice(index2,1)[0];
+            temp1 = $scope.selectModel3.splice(index3,1)[0];
+            prevIndex1[0] = index2;
+            prevIndex1[1] = index3;
         }else if(select===2){
-            selected[1] = value;
+            $scope.disabled.three = false;
+            selected[1] = value.id;
+            if(prevIndex2.length > 0){
+                $scope.selectModel1.splice(prevIndex2[0],0, temp2);
+                $scope.selectModel3.splice(prevIndex2[1],0, temp2);
+            }
+            var index1 = $scope.selectModel1.indexOf( $scope.scatterCompareSelect.selectTwo );
+            var index3 = $scope.selectModel3.indexOf( $scope.scatterCompareSelect.selectTwo );
+            $scope.selectModel1.splice(index1,1);
+            temp2 = $scope.selectModel3.splice(index3,1)[0];
+            prevIndex2[0] = index1;
+            prevIndex2[1] = index3;
         }else if(select ===3){
-            selected[2] = value;
+            selected[2] = value.id;
+            if(prevIndex3.length > 0){
+                $scope.selectModel1.splice(prevIndex3[0],0, temp3);
+                $scope.selectModel2.splice(prevIndex3[1],0, temp3);
+            }
+            var index1 = $scope.selectModel1.indexOf( $scope.scatterCompareSelect.selectThree );
+            var index2 = $scope.selectModel2.indexOf( $scope.scatterCompareSelect.selectThree );
+            $scope.selectModel1.splice(index1,1);
+            temp3 = $scope.selectModel2.splice(index2,1)[0];
+            prevIndex3[0] = index1;
+            prevIndex3[1] = index2;
         }
 
         for(var i=1; i<selected.length+1; i++)
@@ -451,4 +541,8 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
     };
 
 
+}).filter('useFilter', function($filter) {
+    return function(value, filterName) {
+        return $filter(filterName)(value);
+    };
 });

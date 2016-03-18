@@ -1,5 +1,79 @@
 <div class="row">
     <div class="col-sm-12">
         <h1 class="text-center">About</h1>
+        <uib-tabset active="active">
+            <uib-tab index="0" heading="Audience and Interaction">
+                <h2>Audience</h2>
+                <p>The audience targeted by the main visualisations are people interested in an overview of US Government spending, as well as some trends and correlations,
+                    on different projects categorised by 26 agencies. There are tables and comparison functionality which can provide people who require or want more details with a greater
+                    insight into the data.
+                    The audience could include journalists, researchers, analysts of different kind and members of public interested in public spending.
+                </p>
+                <p>
+                    The first chart, is a combination of two data visualisation types, a bar chart and a line chart.
+                    The first dimension is the Total Cost for each agency and the second is the Total Project Count for each agency(third dimension).
+                    The bar chart and the line chart are good visualisation as they follow the principles of good data visualisation, mainly Cleveland and McGill's Theory and their
+                    ranking of properties based on the ability to understand and compare presented data. Also, Tufte’s theory on churtjunk and data-ink ratio is considered here.
+                    All this allows the audience to clearly see if there are any patterns or trends in total costs vs total projects.
+                </p>
+                <p>
+                    The similar principles apply to the drilldown bar chart of top 10 projects for each agency and the scatter plot of Cost Variance vs Schedule Variance.
+                    The scatter plot provides the audience with an ability to see and compare any possible relation between two values for each project.
+                </p>
+                <p>
+                    In addition, a rich table, with sorting, filtering and pagination is provided to view projects data in details and compare.
+                </p>
+                <h3>Interaction</h3>
+                <p>
+                    The first visualisation provides a tooltip with details for each point on the chart and a zoom option to zoom on a specific area of the chart.
+                    To zoom, simply click and drag on the chart area to draw a rectangle where the zoom is desired.
+                    Finally, a drilldown functionality is available by clicking on the agency names in the x-axis as well as data labels on the bar chart.
+                </p>
+                <p>
+                    Below the chart, there is a table with search functionality. First, one needs to select a predicate and then type a search phrase into the search field.
+                    Each column can be sorted by clicking on the column header. There are 3 states, ascending, descending and initial.
+                </p>
+                <p>
+                    The second stage of visualisations, the drilldown bar chart and the scatter plot, provides the tooltip for each data point, a zoom and a “Back to Agencies” button.
+                    In addition to standard functionality, the scatter plot can be used to compare 3 additional agencies to the agency currently being displayed.
+                    There is a Reset button to go back to the initial state.
+                </p>
+                <p>
+                    Lastly, similarly to the first stage of visualisations, a rich table, with sorting, filtering and pagination is provided with the same functionality as previously.
+                    The only additional function is the ability to compare projects.
+                    It is possible through the ability to click on a row of data and select it, which displays the selected project in a table below against any other selected project.
+                    There is a Reset button to go back to the initial state.
+                </p>
+            </uib-tab>
+            <uib-tab index="1" heading="Errors and Data manipulation">
+                <h2>Errors and Data manipulation</h2>
+                <p>
+                    The first error and data manipulation involved reducing the number of Agency names from about 100 to 26.
+                    The issues were misspelled names, trailing whitespaces, inconsistent naming, alternative names, acronyms.
+                    For example, 'DoA' = 'Department of Agriculture' or  'Department of Comerce' = 'Department of Commerce'.
+                </p>
+                <p>
+                    The second manipulation involved rows which were not aligned (moved across) to the columns’ titles. Each row moved out of sync was moved back to place.
+                </p>
+                <p>
+                    Some rows were removed to keep only the necessary data. For example the rows containing 'Totals' of some values for each agency were removed.
+                    This can be calculated dynamically. Also, rows with no meaningful data were removed, for example rows with missing start and end date, life cycle cost, planned cost, cost variance and other data.
+                    These rows would not provide any data.
+                </p>
+                <p>
+                    In addition to the above modifications, a lot of inconsistencies were identified for Schedule variance and Planned and Projected/Actual Project Completion date.
+                    Also, 905 rows had missing Planned and Projected/Actual Project Completion date even though some contained schedule variance.
+                    It was extremely difficult to identify which data values are correct and left out of the final visualisations as identifying them and correcting seems out of the scope
+                    and would require knowledge of each individual project and access to the original data (before it was uploaded as Open Data).
+                </p>
+                <p>
+                    Finally, all numeric columns were converted to numbers and all date columns were converted to dates from string type.
+                </p>
+                <p>All this was performed in Open Refine software and some problems were easier to identify in Google Docs Sheets.</p>
+            </uib-tab>
+            <uib-tab index="2" heading="Hosting">
+                Hosting
+            </uib-tab>
+        </uib-tabset>
     </div>
 </div>

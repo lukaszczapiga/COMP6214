@@ -64,18 +64,18 @@
                     <div class="col-sm-11">
                         <form class="form-inline">
                             <div class="form-group">
-                                <select name="agencySelect1" id="agencySelect1" ng-model="scatterCompareSelect.selectOne" ng-change="onChange(scatterCompareSelect.selectOne, 1)">
-                                    <option ng-repeat="option in compareSelects" value="{{option.id}}">{{option.name}}</option>
+                                <select name="agencySelect1" id="agencySelect1" ng-model="scatterCompareSelect.selectOne" ng-options="option.name for option in selectModel1"
+                                        ng-change="onChange(scatterCompareSelect.selectOne, 1)">
+                                    <!--<option ng-repeat="option in compareSelects" value="{{option.id}}">{{option.name}}</option>-->
                                 </select>
                             </div>
                             <div class="form-group">
-                                <select name="agencySelect2" id="agencySelect2" ng-model="scatterCompareSelect.selectTwo" ng-change="onChange(scatterCompareSelect.selectTwo, 2)">
-                                    <option ng-repeat="option in compareSelects" value="{{option.id}}">{{option.name}}</option>
-                                </select>
+                                <select name="agencySelect2" id="agencySelect2" ng-model="scatterCompareSelect.selectTwo" ng-options="option.name for option in selectModel2"
+                                        ng-change="onChange(scatterCompareSelect.selectTwo, 2)" ng-disabled="disabled.two"></select>
                             </div>
                             <div class="form-group">
-                                <select name="agencySelect3" id="agencySelect3" ng-model="scatterCompareSelect.selectThree" ng-change="onChange(scatterCompareSelect.selectThree, 3)">
-                                    <option ng-repeat="option in compareSelects" value="{{option.id}}">{{option.name}}</option>
+                                <select name="agencySelect3" id="agencySelect3" ng-model="scatterCompareSelect.selectThree" ng-options="option.name for option in selectModel3"
+                                        ng-change="onChange(scatterCompareSelect.selectThree, 3)" ng-disabled="disabled.three">
                                 </select>
                             </div>
                         </form>
@@ -106,29 +106,40 @@
                                         <select class="form-control" id="predicateProjects" ng-model="selectedPredicateProjects" ng-options="predicate for predicate in predicatesProjects"></select>
                                     </form>
                                 </th>
-                                <th>
+                                <th colspan="4">
                                     <input st-search="{{wordsToCamelCase(selectedPredicateProjects)}}" placeholder="Search field" class="input-sm form-control" type="search"/>
                                 </th>
-                                <th width="30%">
+                                <th width="20%">
                                     <st-date-range predicate="startDate" before="query.before" after="query.after"></st-date-range>
+                                </th>
+                                <th width="20%">
+                                    <st-date-range predicate="plannedEndDate" before="query.before2" after="query.after2"></st-date-range>
                                 </th>
                             </tr>
                             <tr>
                                 <th st-sort="name">Name</th>
-                                <th st-sort="cost">Total Costs</th>
+                                <th st-sort="cost">Total Costs ($ M)</th>
+                                <th st-sort="lifecycleCost">Lifecycle Costs ($ M)</th>
+                                <th st-sort="costVariance">Cost Variance ($ M)</th>
+                                <th st-sort="scheduleVariance">Schedule Variance (days)</th>
                                 <th st-sort="startDate">Start Date</th>
+                                <th st-sort="plannedEndDate">End Date</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr st-select-row="row" st-select-mode="multiple" ng-repeat="row in displayedCollectionProjects" ng-click="selectRow(row)">
                                 <td>{{row.name}}</td>
                                 <td>{{row.cost | currency}}</td>
+                                <td>{{row.lifecycleCost | currency}}</td>
+                                <td>{{row.costVariance | currency}}</td>
+                                <td>{{row.scheduleVariance}}</td>
                                 <td>{{row.startDate | date}}</td>
+                                <td>{{row.plannedEndDate | date}}</td>
                             </tr>
                             </tbody>
                             <tfoot>
                             <tr>
-                                <td colspan="2" class="text-center">
+                                <td colspan="6" class="text-center">
                                     <div st-pagination="" st-items-by-page="itemsByPageProjects" st-displayed-pages="5"></div>
                                 </td>
                                 <td class="text-center">
@@ -162,7 +173,7 @@
                     <tbody>
                     <tr ng-repeat="row in attributes">
                         <td>{{row.name}}</td>
-                        <td ng-repeat="value in row.values">{{value | currency}}</td>
+                        <td ng-repeat="value in row.values track by $index">{{value | useFilter:row.filter}}</td>
                     </tr>
                     </tbody>
                 </table>
