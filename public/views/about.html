@@ -23,7 +23,7 @@
                 <p>
                     In addition, a rich table, with sorting, filtering and pagination is provided to view projects data in details and compare.
                 </p>
-                <h3>Interaction</h3>
+                <h2>Interaction</h2>
                 <p>
                     The first visualisation provides a tooltip with details for each point on the chart and a zoom option to zoom on a specific area of the chart.
                     To zoom, simply click and drag on the chart area to draw a rectangle where the zoom is desired.
@@ -72,7 +72,22 @@
                 <p>All this was performed in Open Refine software and some problems were easier to identify in Google Docs Sheets.</p>
             </uib-tab>
             <uib-tab index="2" heading="Hosting">
-                Hosting
+                <h2>Hosting</h2>
+                <p>The application can be found live here: damp-gorge-86040.herokuapp.com</p>
+                <p>
+                    The application is a NodeJS server side and AngularJS client side running on Heroku servers. The easiest and quickest way to run this app is to download the Heroku Toolbelt which provides access
+                    to Heroku Command Line Interface. It requires a heroku account.
+                </p>
+                <p>
+                    Next, clone the application from https://github.com/lukaszczapiga/COMP6214.git or the zip archive and in the command line on the root type "heroku create" then "git push heroku master"
+                    and "heroku open" to view the app.
+                    It can be run locally by typing "heroku local".
+                </p>
+                <p>Alternatively, it can be deployed locally on any server(computer) running NodeJS.
+                    To install dependencies you need to do "npm install"  and then command to run the server, "node index.js" or "npm start".
+                    The package.json will install bower dependencies after npm install thanks to "postinstall": "bower install" script.
+                </p>
+                <p> In case of difficulties running the application, please contact lhc1g12@soton.ac.uk (Lukasz Czapiga)</p>
             </uib-tab>
         </uib-tabset>
     </div>
