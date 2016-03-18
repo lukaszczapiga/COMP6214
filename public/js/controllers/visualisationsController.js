@@ -50,15 +50,28 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
             }else {
                 lifecycleTotalCosts = lifecycleTotalCosts + $scope.data[i]['Lifecycle Cost'];
                 agencyTotalCosts = agencyTotalCosts +  $scope.data[i]['Projected/Actual Cost ($ M)'];
+                var actualEndDate = $scope.data[i]['Projected/Actual Project Completion Date (B2)'];
+                var plannedEndDate =  $scope.data[i]['Completion Date (B1)'];
+                var scheduleVariance = $scope.data[i]['Schedule Variance (in days)'];
+                var startDate = $scope.data[i]['Start Date'];
+
+                /*if(actualEndDate==0){
+                    if(scheduleVariance == 0){
+                        actualEndDate = plannedEndDate;
+                    }else{
+                        actualEndDate = plannedEndDate + scheduleVariance;
+                    }
+                }*/
                 projects.push({
                     name: $scope.data[i]['Project Name'],
                     cost: $scope.data[i]['Projected/Actual Cost ($ M)'],
                     lifecycleCost: $scope.data[i]['Lifecycle Cost'],
-                    startDate: $scope.data[i]['Start Date'],
-                    endDate: $scope.data[i]['Projected/Actual Project Completion Date (B2)'],
+                    startDate: startDate,
+                    plannedEndDate: plannedEndDate,
+                    endDate: actualEndDate,
                     costVariance :  $scope.data[i]['Cost Variance ($ M)'],
                     costVariancePercentage :  $scope.data[i]['Cost Variance (%)'],
-                    scheduleVariance :  $scope.data[i]['Schedule Variance (in days)'],
+                    scheduleVariance :  scheduleVariance,
                     scheduleVariancePercentage :  $scope.data[i]['Schedule Variance (%)']
                 });
             }
@@ -80,18 +93,26 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
 
         $scope.agencyData.sort(function(a, b){return b.totalCosts- a.totalCosts});
 
-        var series = [{
-            name: 'Agencies',
-            colorByPoint: true,
-            data: []
-        }];
-
         var drilldown = {
             series: []
         };
 
+        var projectsSeries = [];
+
         $scope.scatters = {};
 
+        var series = [{
+            name: 'Agencies',
+            colorByPoint: true,
+            data: [],
+            type: 'column',
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                pointFormatter:  function () {
+                    return '<span style="color:'+this.color+'">'+this.name+'</span>: <b>'+Highcharts.numberFormat(this.y, 2, '.',',')+'</b> ($ M)<br/>';
+                }
+            }
+        }];
 
         for(var i=0; i<$scope.agencyData.length; i++){
             agency = {};
@@ -113,7 +134,11 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
                 name: $scope.agencyData[i].name,
                 data: []
             };
-            for(z=0; z<$scope.agencyData[i].projects.length; z++){
+
+            var numberOfProjects = $scope.agencyData[i].projects.length;
+            projectsSeries.push(numberOfProjects);
+
+            for(var z=0; z<numberOfProjects; z++){
                 projects.push([$scope.agencyData[i].projects[z].name,$scope.agencyData[i].projects[z].cost]);
                 $scope.scatters[indexId].data.push({
                     x: $scope.agencyData[i].projects[z].costVariancePercentage,
@@ -126,9 +151,30 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
             agencyDrilldown.name = $scope.agencyData[i].name;
             agencyDrilldown.id = $scope.agencyData[i].name;
             agencyDrilldown.data = projects.splice(0,10);
+            agencyDrilldown.type = 'column';
 
             drilldown.series.push(agencyDrilldown);
         }
+
+        series.push({
+            name: 'Projects',
+            data: projectsSeries,
+            type: 'spline',
+            yAxis: 1,
+            marker: {
+                enabled: false
+            },
+            dataLabels: {
+                enabled: false
+            },
+            //enableMouseTracking: false,
+            color: '#00004d',
+            tooltip: {
+                pointFormatter: function () {
+                    return 'No. projects: ' + this.y;
+                }
+            }
+        });
 
 
         //This is not a highcharts object. It just looks a little like one!
@@ -138,23 +184,24 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
                 //This is the Main Highcharts chart config. Any Highchart options are valid here.
                 //will be overriden by values specified below.
                 chart: {
-                    type: 'column',
                     height: 500,
                     events: {
                         drilldown: function (e) {
                             $scope.$apply(function () {
                                 $scope.showDetails = true;
                                 $scope.agencyIndex = e.point.index;
-
                                 $scope.chartConfig.subtitle.text = e.point.name;
-                                //$scope.agencyDetails = e.seriesOptions;
+
+                                $scope.compareSelects = $scope.agencyData.slice();
+                                $scope.compareSelects.splice($scope.agencyIndex,1);
+
                                 var projectsCopy = $scope.agencyData[$scope.agencyIndex].projects.slice();
                                 $scope.rowCollectionProjects = projectsCopy.splice(0,10);
 
                                 var agencyId = $scope.agencyData[$scope.agencyIndex].id;
                                 $scope.scatterChartConfig.series[0].data = $scope.scatters[agencyId].data;
                                 $scope.scatterChartConfig.series[0].name = $scope.scatters[agencyId].name;
-                                $scope.scatterChartConfig.title.text = 'Cost Variance vs Schedule Variance of '+ $scope.scatters[agencyId].data.length +' Projects by Agency'
+                                $scope.scatterChartConfig.title.text = 'Cost Variance vs Schedule Variance of '+ $scope.scatters[agencyId].data.length +' Projects by Agency';
                             });
                         },
                         drillup: function (e) {
@@ -162,6 +209,7 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
                                 $scope.showDetails = false;
                                 $scope.showCompare = false;
                                 $scope.isAllProjects = false;
+                                $scope.chartConfig.subtitle.text = 'Click the agency name to view the top 10 projects'
                             });
                         }
                     },
@@ -185,7 +233,8 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
                     headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
                     pointFormatter:  function () {
                         return '<span style="color:'+this.color+'">'+this.name+'</span>: <b>'+Highcharts.numberFormat(this.y, 2, '.',',')+'</b> ($ M)<br/>';
-                    }
+                    },
+                    shared: true
                 },
                 drilldown: drilldown,
                 credits: false
@@ -193,13 +242,12 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
             //The below properties are watched separately for changes.
             //Series object (optional) - a list of series using normal Highcharts series options.
             series: series,
-
             //Title configuration (optional)
             title: {
-                text: 'US Government Projects\' Total Costs by Agency'
+                text: 'US Government Projects\' Total Costs and Projects Count by Agency'
             },
             subtitle: {
-                text: 'Click the columns to view the top 10 projects'
+                text: 'Click the agency name to view the top 10 projects'
             },
             //Boolean to control showing loading status on chart (optional)
             //Could be a string if you want to show specific loading text.
@@ -208,6 +256,7 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
             //properties currentMin and currentMax provided 2-way binding to the chart's maximum and minimum
             xAxis: {
                 type: 'category',
+                crosshair: true,
                 labels: {
                     rotation: -60,
                     style: {
@@ -225,12 +274,17 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
                     }*/
                 }
             },
-            yAxis: {
+            yAxis: [{
                 title: {
                     text: 'Total cost ($ M)'
                 }
 
-            }
+            },{
+                title: {
+                    text: 'Total number of projects'
+                },
+                opposite: true
+            }]
         };
 
         $scope.predicatesAgency = ['Name', 'Project Count', 'Total Costs'];
@@ -284,7 +338,7 @@ indexController.controller('visualisationsCtrl', function ($scope,$timeout, open
                         },
                         tooltip: {
                             headerFormat: '<b>{series.name}</b><br>',
-                            pointFormat: '{point.x} %, {point.y} % {point.name}'
+                            pointFormat: 'Cost variance: {point.x} % <br> Schedule variance: {point.y} % <br> {point.name}'
                         }
                     }
                 },

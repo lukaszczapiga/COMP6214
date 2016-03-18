@@ -5,7 +5,8 @@ var data = require('./data.json');
 
 app.set('port', (process.env.PORT || 5000));
 
-app.use(express.static(__dirname + '/public'));
+//app.use(express.static(__dirname + '/public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 //API routes
 app.get('/api/data', function(req, res) {
